@@ -5,25 +5,29 @@ import (
 	db "github.com/jankoskiantonio/simplebank/db/sqlc"
 )
 
-//Server serves HTTP requests for our banking service.
+// Server serves HTTP requests for our banking service.
 type Server struct {
-	store *db.Store
+	store  db.Store
 	router *gin.Engine
 }
 
-//NewServer creates a HTTP server and setup routing.
-func NewServer(store *db.Store) *Server {
+// NewServer creates a HTTP server and setup routing.
+func NewServer(store db.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
 	//add routes to router
 	router.POST("/accounts", server.createAccount)
+	router.GET("accounts/:id", server.getAccount)
+	router.GET("accounts", server.listAccount)
+
+	router.POST("/transfers", server.createTransfer)
 
 	server.router = router
 	return server
 }
 
-//Start runs the HTTP server on a specific address.
+// Start runs the HTTP server on a specific address.
 func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
