@@ -2,19 +2,18 @@ package db
 
 import (
 	"context"
-	//"database/sql"
 	"testing"
 	"time"
 
-	"github.com/jankoskiantonio/simplebank/util"
 	"github.com/stretchr/testify/require"
+	"github.com/jankoskiantonio/simplebank/util"
 )
 
 func createRandomTransfer(t *testing.T, account1, account2 Account) Transfer {
 	arg := CreateTransferParams{
 		FromAccountID: account1.ID,
-		ToAccountID: account2.ID,
-		Amount: util.RandomMoney(),
+		ToAccountID:   account2.ID,
+		Amount:        util.RandomMoney(),
 	}
 
 	transfer, err := testQueries.CreateTransfer(context.Background(), arg)

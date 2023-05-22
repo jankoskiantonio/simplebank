@@ -2,12 +2,11 @@ package db
 
 import (
 	"context"
-	//"database/sql"
 	"testing"
 	"time"
 
-	"github.com/jankoskiantonio/simplebank/util"
 	"github.com/stretchr/testify/require"
+	"github.com/jankoskiantonio/simplebank/util"
 )
 
 func createRandomEntry(t *testing.T, account Account) Entry {
@@ -20,8 +19,8 @@ func createRandomEntry(t *testing.T, account Account) Entry {
 	require.NoError(t, err)
 	require.NotEmpty(t, entry)
 
-	require.Equal(t, arg.Amount, entry.Amount)
 	require.Equal(t, arg.AccountID, entry.AccountID)
+	require.Equal(t, arg.Amount, entry.Amount)
 
 	require.NotZero(t, entry.ID)
 	require.NotZero(t, entry.CreatedAt)
@@ -35,7 +34,8 @@ func TestCreateEntry(t *testing.T) {
 }
 
 func TestGetEntry(t *testing.T) {
-	entry1 := createRandomEntry(t, createRandomAccount(t))
+	account := createRandomAccount(t)
+	entry1 := createRandomEntry(t, account)
 	entry2, err := testQueries.GetEntry(context.Background(), entry1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, entry2)
@@ -47,13 +47,15 @@ func TestGetEntry(t *testing.T) {
 }
 
 func TestListEntries(t *testing.T) {
+	account := createRandomAccount(t)
 	for i := 0; i < 10; i++ {
-		createRandomEntry(t, createRandomAccount(t))
+		createRandomEntry(t, account)
 	}
 
 	arg := ListEntriesParams{
-		Limit:  5,
-		Offset: 5,
+		AccountID: account.ID,
+		Limit:     5,
+		Offset:    5,
 	}
 
 	entries, err := testQueries.ListEntries(context.Background(), arg)
@@ -62,5 +64,6 @@ func TestListEntries(t *testing.T) {
 
 	for _, entry := range entries {
 		require.NotEmpty(t, entry)
+		require.Equal(t, arg.AccountID, entry.AccountID)
 	}
 }
